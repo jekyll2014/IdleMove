@@ -92,7 +92,11 @@ namespace IdleMove
             checkBox_enableSchedule.Checked = _scheduleEnabled;
 
             checkBox_enable.Checked = autoEnable;
-            if (autoEnable)
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            if (checkBox_enable.Checked)
             {
                 this.WindowState = FormWindowState.Minimized;
             }
