@@ -17,8 +17,8 @@ namespace IdleMove
         private const string ToTimeConfigItem = "ToTime";
 
         private Hotkeys _ghk;
-        private int _minPoint = 10;
-        private int _maxPoint = 50;
+        private int _maxX = SystemInformation.VirtualScreen.Width;
+        private int _maxY = SystemInformation.VirtualScreen.Height;
         private int _idleTime = 60;
         private uint _lastIdleTime;
         private bool _hotKeyEnabled;
@@ -26,7 +26,6 @@ namespace IdleMove
         private readonly Timer _systemTimer = new Timer();
         private int _cursorMoveDelay;
         private readonly Random _rnd = new Random();
-        private int _toX, _toY;
         private DateTime _fromTime, _toTime;
 
         public Form1()
@@ -82,7 +81,6 @@ namespace IdleMove
             textBox_to.Text = _toTime.ToShortTimeString();
 
             _cursorMoveDelay = _rnd.Next(0, _idleTime);
-            _toX = _toY = _minPoint;
 
             _systemTimer.Enabled = false;
             _systemTimer.Interval = 1000;
@@ -243,10 +241,9 @@ namespace IdleMove
             if (currentIdleTime - _lastIdleTime > _cursorMoveDelay * 1000)
             {
                 // move mouse
+                var _toX = _rnd.Next(0, _maxX - 1);
+                var _toY = _rnd.Next(0, _maxY - 1);
                 MoveCursor(_toX, _toY);
-                if (_toX != _minPoint) _toX = _toY = _minPoint;
-                else _toX = _toY = _maxPoint;
-
                 // refresh timer delay random
                 _cursorMoveDelay = _rnd.Next(0, _idleTime - 1);
                 _lastIdleTime = currentIdleTime;
@@ -294,25 +291,6 @@ namespace IdleMove
 
         [DllImport("user32.dll")]
         private static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
-
-        private static int GetLastInputTime()
-        {
-            var idleTime = 0;
-            var lastInputInfo = new LASTINPUTINFO();
-            lastInputInfo.cbSize = (uint)Marshal.SizeOf(lastInputInfo);
-            lastInputInfo.dwTime = 0;
-
-            var envTicks = Environment.TickCount;
-
-            if (GetLastInputInfo(ref lastInputInfo))
-            {
-                var lastInputTick = (int)lastInputInfo.dwTime;
-
-                idleTime = envTicks - lastInputTick;
-            }
-
-            return idleTime > 0 ? idleTime / 1000 : 0;
-        }
 
         private void MoveCursor(int x, int y)
         {

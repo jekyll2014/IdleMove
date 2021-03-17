@@ -1,0 +1,120 @@
+Use mouse_event or keybd_event. They say not to use them anymore but you don't have to find the window at all.
+Virtual Key Codes are here for this one: http://www.kbdedit.com/manual/low_level_vk_list.html
+====
+using System;
+using System.Runtime.InteropServices;
+
+public class SimulatePCControl
+{
+
+[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+public static extern void keybd_event(uint bVk, uint bScan, uint dwFlags, uint dwExtraInfo);
+
+private const int VK_LEFT = 0x25;
+
+public static void LeftArrow()
+{
+    keybd_event(VK_LEFT, 0, 0, 0);
+}
+
+}
+====
+
+Also for mouse:
+====
+using System.Runtime.InteropServices;
+using UnityEngine;
+
+public class SimulateMouseClick
+{
+[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
+//Mouse actions
+private const int MOUSEEVENTF_LEFTDOWN = 0x02;
+private const int MOUSEEVENTF_LEFTUP = 0x04;
+private const int MOUSEEVENTF_RIGHTDOWN = 0x08;
+private const int MOUSEEVENTF_RIGHTUP = 0x10;
+
+public static void Click()
+{
+    //Call the imported function with the cursor's current position
+    uint X = (uint)0;
+    uint Y = (uint)0;
+    mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, X, Y, 0, 0);
+    Debug.LogError("SIMULATED A MOUSE CLICK JUST NOW...");
+}
+
+//...other code needed for the application
+}
+====
+
+Easy, short and no need window focus:
+
+Also here a usefull list of Virtual Key Codes
+====
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll")]
+        static extern bool PostMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            const int WM_SYSKEYDOWN = 0x0104;
+            const int VK_F5 = 0x74;
+
+            IntPtr WindowToFind = FindWindow(null, "Google - Mozilla Firefox");
+
+            PostMessage(WindowToFind, WM_SYSKEYDOWN, VK_F5, 0);
+        }
+====
+
+====
+static class Program
+{
+    [DllImport("user32.dll")]
+    public static extern int SetForegroundWindow(IntPtr hWnd);
+
+    [STAThread]
+    static void Main()
+    {
+        while(true)
+        {
+            Process [] processes = Process.GetProcessesByName("iexplore");
+
+            foreach(Process proc in processes)
+            {
+                SetForegroundWindow(proc.MainWindowHandle);
+                SendKeys.SendWait("{F5}");
+            }
+
+            Thread.Sleep(5000);
+        }
+    }
+}
+====
+
+====
+static class Program
+{
+    const UInt32 WM_KEYDOWN = 0x0100;
+    const int VK_F5 = 0x74;
+
+    [DllImport("user32.dll")]
+    static extern bool PostMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
+
+    [STAThread]
+    static void Main()
+    {
+        while(true)
+        {
+            Process [] processes = Process.GetProcessesByName("iexplore");
+
+            foreach(Process proc in processes)
+                PostMessage(proc.MainWindowHandle, WM_KEYDOWN, VK_F5, 0);
+
+            Thread.Sleep(5000);
+        }
+    }
+}
+====
