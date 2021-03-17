@@ -59,15 +59,15 @@ namespace IdleMove
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(9, 38);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(46, 13);
+            this.label1.Size = new System.Drawing.Size(75, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Idle time";
+            this.label1.Text = "Idle time (sec.)";
             // 
             // textBox_time
             // 
-            this.textBox_time.Location = new System.Drawing.Point(61, 35);
+            this.textBox_time.Location = new System.Drawing.Point(90, 35);
             this.textBox_time.Name = "textBox_time";
-            this.textBox_time.Size = new System.Drawing.Size(69, 20);
+            this.textBox_time.Size = new System.Drawing.Size(40, 20);
             this.textBox_time.TabIndex = 2;
             this.textBox_time.Leave += new System.EventHandler(this.TextBox_time_Leave);
             // 
